@@ -16,7 +16,6 @@ and that solves the MPC problem
 #include<Eigen/Dense>
 
 #include "ModelPredictiveController.h"
-#include "ModelPredictiveController.cpp"
 
 using namespace Eigen;
 using namespace std;
@@ -40,7 +39,7 @@ unsigned int v=18;
 
 
 //###############################################################################
-//# Define the model - continious time
+//# Define the model - continuous time
 //###############################################################################
 
 //# masses, spring and damper constants
@@ -209,12 +208,11 @@ for (int index1=0; index1<timeSteps-f-1; index1++)
 {
   mpc.computeControlInputs();    
 }
-    
 // save the computed vectors and matrices
-// saveData(string desiredControlTrajectoryTotalFile, string inputsFile, 
+// saveData(string desiredControlTrajectoryTotalFile, string inputsFile,
 // 							string statesFile, string outputsFile)
-mpc.saveData("trajectory.csv", "computedInputs.csv", 
-                            "states.csv", "outputs.csv","Omatrix.csv","Mmatrix.csv");
+mpc.saveData("../trajectory.csv", "../computedInputs.csv",
+                            "../states.csv", "../outputs.csv","../Omatrix.csv","../Mmatrix.csv");
 
 cout<<"MPC simulation completed and data saved!"<<endl;
 return 0;

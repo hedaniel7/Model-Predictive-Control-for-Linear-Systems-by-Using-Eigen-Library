@@ -52,7 +52,7 @@ class ModelPredictiveController{
         // outputsFile  - name of the file used to store the computed outputs - this is the controlled output
         // Ofile        - name of the file used to store the O lifted matrix - you can use this for diagonostics
         // Mfile        - name of the file used to store the M lifted matrix - you can use this for diagonostics
-        void ModelPredictiveController::saveData(string desiredControlTrajectoryTotalFile, string inputsFile, 
+        void saveData(string desiredControlTrajectoryTotalFile, string inputsFile,
 							string statesFile, string outputsFile,string OFile, string MFile) const;
 
     private:

@@ -37,4 +37,8 @@ ALSO, IT IS NOT ALLOWED TO
 
  DELIBERATE OR INDELIBERATE VIOLATIONS OF THIS LICENSE WILL INDUCE LEGAL ACTIONS AND LAWSUITS. . 
 
+## Made it work for CLion (Daniel He)
+
+Included https://gitlab.com/libeigen/eigen/-/releases/3.4.0 directly into the library
+
 
