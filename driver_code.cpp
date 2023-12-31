@@ -88,25 +88,26 @@ const double g = 9.81;     // Acceleration due to gravity
                              {0, 0, 0, 0},
                              {0, 0, 0, 0},};
 
-    Matrix <double,12,12> Cc;
-    Cc.setIdentity(); // Cc_everything
+    //Matrix <double,12,12> Cc;
+    //Cc.setIdentity(); // Cc_everything
 
 
     // Cc_Rot_pos
-    //Matrix <double,6,12> Cc {{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    //                          {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    //                          {0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    //                          {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0},
-    //                          {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-    //                          {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}};
+    Matrix <double,6,12> Cc {{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                              {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                              {0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                              {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0},
+                              {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
+                              {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}};
 
 
 
 
-
+    // This is always 12-dimensional!
     //                         Rotation    angular vel   vel       position
     //                     roll,pitch,yaw, p, q, r,    u, v, w,     x, y, z
     Matrix <double,12,1> x0 {{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0}};
+
 
 
 
@@ -176,11 +177,11 @@ for (int i=0; i<v;i++)
 
 
 //# W2 matrix
-Matrix <double,Bc.cols(),Bc.cols()> Q0;
+Matrix <double, Bc.cols(), Bc.cols()> Q0;
 Q0.setIdentity();
 Q0 = Q0 * 0.0000000011;
 
-Matrix <double,Bc.cols(),Bc.cols()> Qother;
+Matrix <double, Bc.cols(), Bc.cols()> Qother;
 Qother.setIdentity();
 Qother = Qother * 0.0001;
 
@@ -221,7 +222,7 @@ W4.setZero();
 // # in the general case, this constant should be a matrix
 //double predWeight=10;
 
-Matrix <double,12,12> predWeight;
+Matrix <double, Cc.rows(), Cc.rows()> predWeight;
 predWeight.setIdentity();
 predWeight = 10 * predWeight;
 
@@ -278,15 +279,15 @@ Matrix <double,6,1> desiredTrajectory_instance {{0},{0},{0},{0},{0},{1}};
 
 //                                                Rotation    position
 //                                            roll,pitch,yaw, x, y, z
-//MatrixXd desiredTrajectory_instance;
-//desiredTrajectory_instance.resize(6,1);
-//desiredTrajectory_instance << 0, 0, 0, 0, 0, 1;
+MatrixXd desiredTrajectory_instance;
+desiredTrajectory_instance.resize(6,1);
+desiredTrajectory_instance << 0, 0, 0, 0, 0, 1;
 
 //                                                 Rotation    angular vel   vel       position
 //                                             roll,pitch,yaw, p, q, r,    u, v, w,     x, y, z
-MatrixXd desiredTrajectory_instance;
-desiredTrajectory_instance.resize(12,1);
-desiredTrajectory_instance << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1;
+//MatrixXd desiredTrajectory_instance;
+//desiredTrajectory_instance.resize(12,1);
+//desiredTrajectory_instance << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1;
 
 
 
