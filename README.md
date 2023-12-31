@@ -43,6 +43,7 @@ Included https://gitlab.com/libeigen/eigen/-/releases/3.4.0 directly into the li
 
 
 ### For specific drone problem - tmp.inverse() contains nan
+commit: 26bdf85206661c7aa6d848138a9285640bd32230
 
 Setup:
 ```
