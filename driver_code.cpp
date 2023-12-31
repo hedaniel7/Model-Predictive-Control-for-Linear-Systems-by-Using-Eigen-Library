@@ -280,7 +280,7 @@ Matrix <double,6,1> desiredTrajectory_instance {{0},{0},{0},{0},{0},{1}};
 //                                                Rotation    position
 //                                            roll,pitch,yaw, x, y, z
 MatrixXd desiredTrajectory_instance;
-desiredTrajectory_instance.resize(6,1);
+desiredTrajectory_instance.resize(Cc.rows(),1);
 desiredTrajectory_instance << 0, 0, 0, 0, 0, 1;
 
 //                                                 Rotation    angular vel   vel       position
@@ -297,6 +297,7 @@ MatrixXd desiredTrajectory_instance_transposed = desiredTrajectory_instance.tran
 
 MatrixXd desiredTrajectory;
 desiredTrajectory.resize(timeSteps * desiredTrajectory_instance.rows(), 1);
+cout << "desiredTrajectory.resize(  --> timeSteps * desiredTrajectory_instance.rows() <-- : " << timeSteps * desiredTrajectory_instance.rows() << endl;
 //desiredTrajectory.setZero();
 
 

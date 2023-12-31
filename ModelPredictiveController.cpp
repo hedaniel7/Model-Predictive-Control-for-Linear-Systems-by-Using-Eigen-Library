@@ -61,7 +61,13 @@ ModelPredictiveController::ModelPredictiveController(
     k=0;
 
     // the trajectory is a column matrix
-    unsigned int maxSimulationSamples = desiredControlTrajectoryTotal.rows() - f;
+    cout << "desiredControlTrajectoryTotal.rows(): " << desiredControlTrajectoryTotal.rows() << endl;
+    cout << "f: " << f << endl;
+
+    // old code, where I think that Aleksandar hasn't thought about the multidimensional case
+    // unsigned int maxSimulationSamples = desiredControlTrajectoryTotal.rows() - f;
+    unsigned int maxSimulationSamples = desiredControlTrajectoryTotal.rows() - f*C.rows();
+    cout << "maxSimulationSamples = desiredControlTrajectoryTotal.rows() - f: " << maxSimulationSamples << endl;
     cout << "desiredControlTrajectoryTotal after constructor: " << desiredControlTrajectoryTotal << endl;
     cout << "desiredControlTrajectoryTotal.rows() after constructor: " << desiredControlTrajectoryTotal.rows() << endl;
     
@@ -211,6 +217,7 @@ void ModelPredictiveController::computeControlInputs()
     //# compute the vector s
     MatrixXd vectorS;
 
+    cout << "states: \n" << states<< endl;
     cout << "states.col(k): " << states.col(k) << endl;
     cout << "O*states.col(k): " << O*states.col(k) << endl;
     cout << "desiredControlTrajectory: " << desiredControlTrajectory << endl;
