@@ -62,6 +62,8 @@ ModelPredictiveController::ModelPredictiveController(
 
     // the trajectory is a column matrix
     unsigned int maxSimulationSamples = desiredControlTrajectoryTotal.rows() - f;
+    cout << "desiredControlTrajectoryTotal after constructor: " << desiredControlTrajectoryTotal << endl;
+    cout << "desiredControlTrajectoryTotal.rows() after constructor: " << desiredControlTrajectoryTotal.rows() << endl;
     
     // we store the state vectors of the controlled state trajectory
     states.resize(n, maxSimulationSamples); 
@@ -173,7 +175,21 @@ ModelPredictiveController::ModelPredictiveController(
     MatrixXd tmp;
     tmp.resize(v*m,v*m);
 
+    cout << "W4: " << W4 << endl;
+    cout << "M: " << M << endl;
+    cout << "W3: " << W3 << endl;
+    cout << "M.transpose(): " << M.transpose() << endl;
+    cout << "M.transpose()*W4*M: " << M.transpose()*W4*M << endl;
+
+
+
     tmp=M.transpose()*W4*M+W3;
+    cout << "tmp=M.transpose()*W4*M+W3: " << tmp << endl;
+
+
+    cout << "tmp.inverse(): " << tmp.inverse() << endl;
+    cout << "(tmp.inverse())*(M.transpose())*W4: " << (tmp.inverse())*(M.transpose())*W4 << endl;
+
     gainMatrix=(tmp.inverse())*(M.transpose())*W4;
         
 }
@@ -186,15 +202,30 @@ void ModelPredictiveController::computeControlInputs()
 
     // # extract the segment of the desired control trajectory
     MatrixXd desiredControlTrajectory;
-    desiredControlTrajectory=desiredControlTrajectoryTotal(seq(k,k+f-1),all);
+    desiredControlTrajectory=desiredControlTrajectoryTotal(seq(r*k,r*(k+f)-1),all);
+
+    cout << "desiredControlTrajectory: " << desiredControlTrajectory << endl;
+    cout << "k: " << k << endl;
+    cout << "desiredControlTrajectoryTotal(seq(k,k+f-1),all);: " << desiredControlTrajectoryTotal(seq(r*k,r*(k+f)-1),all) << endl;
 
     //# compute the vector s
     MatrixXd vectorS;
+
+    cout << "states.col(k): " << states.col(k) << endl;
+    cout << "O*states.col(k): " << O*states.col(k) << endl;
+    cout << "desiredControlTrajectory: " << desiredControlTrajectory << endl;
+    cout << "O.rows(): " << O.rows() << endl;
+    cout << "O.cols(): " << O.cols() << endl;
     vectorS=desiredControlTrajectory-O*states.col(k);
- 
+
+    cout << "vectorS: " << vectorS << endl;
     //# compute the control sequence
     MatrixXd inputSequenceComputed;
+
+    cout << "gainMatrix: " << gainMatrix << endl;
+
     inputSequenceComputed=gainMatrix*vectorS;
+    cout << "inputSequenceComputed: " << inputSequenceComputed << endl;
     // extract the first entry that is applied to the system
     inputs.col(k)=inputSequenceComputed(seq(0,m-1),all);
 

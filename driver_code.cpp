@@ -29,9 +29,9 @@ int main()
 //###############################################################################
 
 // prediction horizon
-unsigned int f=20;
+unsigned int f=3;
 // control horizon
-unsigned int v=18;
+unsigned int v=3;
 
 //###############################################################################
 //# end of MPC parameter definitions
@@ -43,9 +43,10 @@ unsigned int v=18;
 //###############################################################################
 
 //# masses, spring and damper constants
-double m1=2  ; double m2=2   ; double k1=100  ; double k2=200 ; double d1=1  ; double d2=5; 
+//double m1=2  ; double m2=2   ; double k1=100  ; double k2=200 ; double d1=1  ; double d2=5;
 //# define the continuous-time system matrices and initial condition
 
+/*
     Matrix <double,4,4> Ac {{0, 1, 0, 0},
                             {-(k1+k2)/m1 ,  -(d1+d2)/m1 , k2/m1 , d2/m1},
                             {0 , 0 ,  0 , 1},
@@ -53,7 +54,62 @@ double m1=2  ; double m2=2   ; double k1=100  ; double k2=200 ; double d1=1  ; d
     Matrix <double,4,1> Bc {{0},{0},{0},{1/m2}}; 
     Matrix <double,1,4> Cc {{1,0,0,0}};
 
-    Matrix <double,4,1> x0 {{0},{0},{0},{0}}; 
+    Matrix <double,4,1> x0 {{0},{0},{0},{0}};
+*/
+
+const double Ix = 0.0000166;  // Moment of inertia around p_WB_W_x-axis, source: Julian Förster's ETH Bachelor Thesis
+const double Iy = 0.0000167;  // Moment of inertia around p_WB_W_y-axis, source: Julian Förster's ETH Bachelor Thesis
+const double Iz = 0.00000293;  // Moment of inertia around p_WB_W_z-axis, source: Julian Förster's ETH Bachelor Thesis
+const double mass = 0.029;  // Mass of the quadrotor, source: Julian Förster's ETH Bachelor Thesis
+const double g = 9.81;     // Acceleration due to gravity
+
+    Matrix <double,12,12> Ac {{0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
+                              {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
+                              {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0},
+                              {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                              {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                              {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                              {0, -g, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                              {g, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                              {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                              {0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0},
+                              {0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0},
+                              {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0}};
+    Matrix <double,12,4> Bc {{0, 0, 0, 0},
+                             {0, 0, 0, 0},
+                             {0, 0, 0, 0},
+                             {0, 1.0/Ix, 0, 0},
+                             {0, 0, 1.0/Iy, 0},
+                             {0, 0, 0, 1.0/Iz},
+                             {0, 0, 0, 0},
+                             {0, 0, 0, 0},
+                             {1.0/mass, 0, 0, 0},
+                             {0, 0, 0, 0},
+                             {0, 0, 0, 0},
+                             {0, 0, 0, 0},};
+
+    //Matrix <double,12,12> Cc
+    //Cc.setIdentity(); // Cc_everything
+
+
+    // Cc_Rot_pos
+    Matrix <double,6,12> Cc {{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                              {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                              {0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                              {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0},
+                              {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
+                              {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}};
+
+
+
+
+
+    //                         Rotation    angular vel   vel       position
+    //                     roll,pitch,yaw, p, q, r,    u, v, w,     x, y, z
+    Matrix <double,12,1> x0 {{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0}};
+
+
+
 
 //  m- number of inputs
 //  r - number of outputs
@@ -175,10 +231,11 @@ for (int i=0; i<f;i++)
 //# Define the reference trajectory 
 //###############################################################################
 
-unsigned int timeSteps=300;
+unsigned int timeSteps=10;
 
 //# pulse trajectory
 
+/*
 MatrixXd desiredTrajectory;
 desiredTrajectory.resize(timeSteps,1);
 desiredTrajectory.setZero();
@@ -189,6 +246,68 @@ tmp1=MatrixXd::Ones(100,1);
 desiredTrajectory(seq(0,100-1),all)=tmp1;
 
 desiredTrajectory(seq(200,timeSteps-1),all)=tmp1;
+*/
+
+/*
+//                                                 Rotation    angular vel   vel       position
+//                                             roll,pitch,yaw, p, q, r,    u, v, w,     x, y, z
+Matrix <double,12,1> desiredTrajectory_instance {{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{0},{1}};
+
+//                                                position
+//                                                x, y, z
+//Matrix <double,3,1> desiredTrajectory_instance {{0},{0},{1}};
+
+
+ //                                                Rotation    position
+//                                            roll,pitch,yaw, x, y, z
+Matrix <double,6,1> desiredTrajectory_instance {{0},{0},{0},{0},{0},{1}};
+*/
+
+
+//                                                Rotation    position
+//                                            roll,pitch,yaw, x, y, z
+MatrixXd desiredTrajectory_instance;
+desiredTrajectory_instance.resize(6,1);
+desiredTrajectory_instance << 0, 0, 0, 0, 0, 1;
+
+
+
+// Matrix <double,1,6> desiredTrajectory_instance_transposed = desiredTrajectory_instance.transpose();
+MatrixXd desiredTrajectory_instance_transposed = desiredTrajectory_instance.transpose();
+
+
+MatrixXd desiredTrajectory;
+desiredTrajectory.resize(timeSteps * desiredTrajectory_instance.rows(), 1);
+//desiredTrajectory.setZero();
+
+
+//for (int i = 0; i < timeSteps; ++i) {
+//    desiredTrajectory.row(i) = desiredTrajectory_instance.transpose();
+//}
+
+/*
+for (int row = 0; row < timeSteps; ++row) {
+    for (int col = 0; col < 6; ++col) {
+        double val = desiredTrajectory_instance(col, 0);
+        cout << "val: " << val << endl;
+        desiredTrajectory(row, col) = val;
+
+        cout << "desiredTrajectory" << desiredTrajectory << endl;
+    }
+}
+*/
+
+for (int t = 0; t < timeSteps; ++t){
+    for (int r = 0; r < desiredTrajectory_instance.rows(); ++r){
+        desiredTrajectory.row(t * desiredTrajectory_instance.rows() + r) = desiredTrajectory_instance.row(r);
+    }
+
+}
+
+
+cout << "desiredTrajectory after for loop: " << desiredTrajectory << endl;
+cout << "desiredTrajectory.rows(): " << desiredTrajectory.rows() << endl;
+
 
 //###############################################################################
 //# end of definition of the reference trajectory 

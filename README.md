@@ -42,3 +42,79 @@ ALSO, IT IS NOT ALLOWED TO
 Included https://gitlab.com/libeigen/eigen/-/releases/3.4.0 directly into the library
 
 
+### For specific drone problem - tmp.inverse() contains nan
+
+Setup:
+```
+Matrix <double,12,12> Ac {{0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0},
+                              {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
+                              {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0},
+                              {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                              {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                              {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                              {0, -g, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                              {g, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                              {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                              {0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0},
+                              {0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0},
+                              {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0}};
+    Matrix <double,12,4> Bc {{0, 0, 0, 0},
+                             {0, 0, 0, 0},
+                             {0, 0, 0, 0},
+                             {0, 1.0/Ix, 0, 0},
+                             {0, 0, 1.0/Iy, 0},
+                             {0, 0, 0, 1.0/Iz},
+                             {0, 0, 0, 0},
+                             {0, 0, 0, 0},
+                             {1.0/mass, 0, 0, 0},
+                             {0, 0, 0, 0},
+                             {0, 0, 0, 0},
+                             {0, 0, 0, 0},};
+
+    //Matrix <double,12,12> Cc
+    //Cc.setIdentity(); // Cc_everything
+
+
+    // Cc_Rot_pos
+    Matrix <double,6,12> Cc {{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                              {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                              {0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+                              {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0},
+                              {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
+                              {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}};
+
+
+```
+
+produces
+
+```
+tmp=M.transpose()*W4*M+W3: 0.000100001           0           0           0     -0.0001           0           0           0           0           0           0           0
+          0 3.17535e+06           0           0           0 1.81449e+06           0           0           0      680433           0           0
+          0           0           0           0           0           0           0           0           0           0           0           0
+          0           0           0           0           0           0           0           0           0           0           0           0
+    -0.0001           0           0           0      0.0002           0           0           0     -0.0001           0           0           0
+          0 1.81449e+06           0           0           0 1.13405e+06           0           0           0      453622           0           0
+          0           0           0           0           0           0           0           0           0           0           0           0
+          0           0           0           0           0           0           0           0           0           0           0           0
+          0           0           0           0     -0.0001           0           0           0      0.0001           0           0           0
+          0      680433           0           0           0      453622           0           0           0      226811           0           0
+          0           0           0           0           0           0           0           0           0           0           0           0
+          0           0           0           0           0           0           0           0           0           0           0           0
+tmp.inverse(): -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan
+-nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan
+-nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan
+-nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan
+-nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan
+-nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan
+-nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan
+-nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan
+-nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan
+-nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan
+-nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan
+-nan -nan -nan -nan -nan -nan -nan -nan -nan -nan -nan  inf
+```
+
+
+
+
