@@ -88,17 +88,17 @@ const double g = 9.81;     // Acceleration due to gravity
                              {0, 0, 0, 0},
                              {0, 0, 0, 0},};
 
-    //Matrix <double,12,12> Cc
-    //Cc.setIdentity(); // Cc_everything
+    Matrix <double,12,12> Cc;
+    Cc.setIdentity(); // Cc_everything
 
 
     // Cc_Rot_pos
-    Matrix <double,6,12> Cc {{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                              {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                              {0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-                              {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0},
-                              {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
-                              {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}};
+    //Matrix <double,6,12> Cc {{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    //                          {0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    //                          {0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    //                          {0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0},
+    //                          {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0},
+    //                          {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}};
 
 
 
@@ -176,8 +176,14 @@ for (int i=0; i<v;i++)
 
 
 //# W2 matrix
-double Q0=0.0000000011;
-double Qother=0.0001;
+Matrix <double,Bc.cols(),Bc.cols()> Q0;
+Q0.setIdentity();
+Q0 = Q0 * 0.0000000011;
+
+Matrix <double,Bc.cols(),Bc.cols()> Qother;
+Qother.setIdentity();
+Qother = Qother * 0.0001;
+
 
 MatrixXd W2;
 W2.resize(v*m,v*m);
@@ -188,15 +194,15 @@ for (int i=0; i<v; i++)
   if (i==0)
   {
     // this is for multivariable
-    //W2(seq(i*m,(i+1)*m-1),seq(i*m,(i+1)*m-1))=Q0;
+    W2(seq(i*m,(i+1)*m-1),seq(i*m,(i+1)*m-1))=Q0;
 
-    W2(i*m,i*m)=Q0;
+    //W2(i*m,i*m)=Q0;
   }
   else
   {
     // this is for multivariable
-    //W2(seq(i*m,(i+1)*m-1),seq(i*m,(i+1)*m-1))=Qother;
-    W2(i*m,i*m)=Qother;
+    W2(seq(i*m,(i+1)*m-1),seq(i*m,(i+1)*m-1))=Qother;
+    //W2(i*m,i*m)=Qother;
 
   }
         
@@ -213,13 +219,19 @@ W4.resize(f*r,f*r);
 W4.setZero();
 
 // # in the general case, this constant should be a matrix
-double predWeight=10;
+//double predWeight=10;
+
+Matrix <double,12,12> predWeight;
+predWeight.setIdentity();
+predWeight = 10 * predWeight;
+
+cout << "predWeight: " << predWeight << endl;
 
 for (int i=0; i<f;i++)
 {
    //this is for multivariable
-  //W4(seq(i*r,(i+1)*r-1),seq(i*r,(i+1)*r-1))=predWeight;
-  W4(i*r,i*r)=predWeight;
+  W4(seq(i*r,(i+1)*r-1),seq(i*r,(i+1)*r-1))=predWeight;
+  //W4(i*r,i*r)=predWeight;
 }
 
   
@@ -231,7 +243,7 @@ for (int i=0; i<f;i++)
 //# Define the reference trajectory 
 //###############################################################################
 
-unsigned int timeSteps=10;
+unsigned int timeSteps=5;
 
 //# pulse trajectory
 
@@ -266,9 +278,15 @@ Matrix <double,6,1> desiredTrajectory_instance {{0},{0},{0},{0},{0},{1}};
 
 //                                                Rotation    position
 //                                            roll,pitch,yaw, x, y, z
+//MatrixXd desiredTrajectory_instance;
+//desiredTrajectory_instance.resize(6,1);
+//desiredTrajectory_instance << 0, 0, 0, 0, 0, 1;
+
+//                                                 Rotation    angular vel   vel       position
+//                                             roll,pitch,yaw, p, q, r,    u, v, w,     x, y, z
 MatrixXd desiredTrajectory_instance;
-desiredTrajectory_instance.resize(6,1);
-desiredTrajectory_instance << 0, 0, 0, 0, 0, 1;
+desiredTrajectory_instance.resize(12,1);
+desiredTrajectory_instance << 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1;
 
 
 
